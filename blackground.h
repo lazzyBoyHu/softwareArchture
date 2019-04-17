@@ -8,6 +8,7 @@
 #include <vector>
 #include <fstream>
 #include <dirent.h>
+#include <string.h>
 
 #define MAXLENGTH 20
 
@@ -144,11 +145,11 @@ class BlackBoard : public AbstractBlackboard
 class ShiftAction : public AbstractAction
 {
     public:
-        void fire()
+        ShiftAction() : AbstractAction()
         {
-            std::cout << "shift   =====     start-----------------------      =========" << std::endl;
-            void shift();
-            std::cout << "shift   =====     end-------------------------      =========" << std::endl;
+        }
+        ~ShiftAction()
+        {
         }
         void shift()
         {
@@ -206,16 +207,28 @@ class ShiftAction : public AbstractAction
                 }
             }
         }
+        void fire()
+        {
+            std::cout << "shift   =====     start-----------------------      =========" << std::endl;
+            shift();
+            std::cout << "shift   =====     end-------------------------      =========" << std::endl;
+        }
 };
 
 class OutputAction : public AbstractAction
 {
     public:
+        OutputAction()
+        {
+        }
+        ~OutputAction()
+        {
+        }
         void fire()
         {
             std::cout << "output------=========--------        start" << std::endl;
             //void printAll();
-            void printOriginData();
+            printOriginData();
             std::cout << "output------=========--------          end" << std::endl;
         }
 
