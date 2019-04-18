@@ -153,15 +153,10 @@ class ShiftAction : public AbstractAction
         }
         void shift()
         {
-            std::cout << "function   shift" << std::endl;
             BlackBoard * bb = dynamic_cast<BlackBoard*>(owner);
             if (bb == nullptr)
-            {
-                std::cout << "shift   bb   ======    nullptr" << std::endl;
                 return;
-            }
 
-            std::cout << "shift   bb   !=====    nullptr" << std::endl;
             auto allDataBegin = bb->allData.begin();
             auto allDataEnd = bb->allData.end();
 
@@ -169,14 +164,10 @@ class ShiftAction : public AbstractAction
             {
                 SetenceData * tempSetenceData = *temp;
                 if (tempSetenceData == nullptr || tempSetenceData->originData.empty())
-                {
-                    std::cout << "tempSetenceData == null or tempSetenceData->originData.empty() == true" << std::endl;
                     continue;
-                }
 
-                int index = 1;
                 int length = tempSetenceData->originData.size();
-                for ( ; index <= length; index++)
+                for (int index = 1; index <= length; index++)
                 {
                     std::list<std::string*>::iterator copyBegin;
                     std::list<std::string*>::iterator copyEnd;
@@ -192,26 +183,21 @@ class ShiftAction : public AbstractAction
                     tempList.clear();
 
                     for (auto tempString = copyBegin; tempString != copyEnd; tempString++)
-                    {
                         tempList.push_back(*tempString);
-                        std::cout << "index   ===    " << index << std::endl;
-                        std::cout << "string   ===   " << **tempString << std::endl;
-                    }
 
-                    if (index == 1)
+                    if (index != 1)
                     {
                         std::string * copyString = *tempList.begin();
-                        tempList.erase(tempList.begin());
+                        tempList.pop_front();
                         tempList.push_back(copyString);
                     }
+                    tempSetenceData->shiftData[index] = tempList;
                 }
             }
         }
         void fire()
         {
-            std::cout << "shift   =====     start-----------------------      =========" << std::endl;
             shift();
-            std::cout << "shift   =====     end-------------------------      =========" << std::endl;
         }
 };
 
@@ -226,10 +212,8 @@ class OutputAction : public AbstractAction
         }
         void fire()
         {
-            std::cout << "output------=========--------        start" << std::endl;
-            //void printAll();
-            printOriginData();
-            std::cout << "output------=========--------          end" << std::endl;
+            printAll();
+            //printOriginData();
         }
 
         void printAll()
@@ -386,9 +370,7 @@ class SortAction : public AbstractAction
 
         void fire()
         {
-            std::cout << "sort============               ====================start" << std::endl;
             sort();
-            std::cout << "sort============               ======================end" << std::endl;
         }
 
         void sort()
@@ -470,7 +452,6 @@ class InputAction : public AbstractAction
 
         void fire()
         {
-            std::cout << "input start------------------" << std::endl;
             readAllFilesName();
 
             auto listBegin = fileNameList.begin();
@@ -478,7 +459,6 @@ class InputAction : public AbstractAction
 
             for (auto temp = listBegin; temp != listEnd; temp++)
                 readOneFileByName(*temp);
-            std::cout << "input end--------------------" << std::endl;
         }
 
         void readAllFilesName()
@@ -536,7 +516,6 @@ class InputAction : public AbstractAction
 
         int stringSplit(SetenceData * tempSetenceData, std::string * buffer)
         {
-            std::cout << "buffer   ===    " << *buffer << std::endl;
             if (tempSetenceData == nullptr)
                 return StringSplitError_NoSetenceData;
             if (buffer == nullptr)
