@@ -20,6 +20,15 @@ enum AbstractActionType
     AbstractActionType_Alphabetizer,
 };
 
+enum BlackBoardState
+{
+    BlackBoardState_Null,
+    BlackBoardState_Input,
+    BlackBoardState_Shift,
+    BlackBoardState_Sort,
+    BlackBoardState_Output,
+};
+
 class AbstractBlackboard;
 
 class AbstractAction
@@ -92,6 +101,28 @@ class AbstractBlackboard
             }
             return true;
         }
+        AbstractAction * getAbstractActionByType(int type)
+        {
+            AbstractAction * abstractAction = nullptr;
+            switch (type)
+            {
+                case AbstractActionType_Input :
+                    abstractAction = input;
+                    break;
+                case AbstractActionType_Output :
+                    abstractAction = output;
+                    break;
+                case AbstractActionType_Shift :
+                    abstractAction = shift;
+                    break;
+                case AbstractActionType_Alphabetizer :
+                    abstractAction = alphabetizer;
+                    break;
+                default:
+                    break;
+            }
+            return abstractAction;
+        }
         virtual void * getData() = 0;
         virtual void call() = 0;
 };
@@ -124,14 +155,21 @@ class BlackBoard : public AbstractBlackboard
 {
     public:
         std::list<SetenceData*> allData;
+        int state;
     public:
         BlackBoard() : AbstractBlackboard()
         {
             allData.clear();
+            state = BlackBoardState_Null;
         }
         ~BlackBoard()
         {
             allData.clear();
+        }
+        void changeState()
+        {
+            if (state != BlackBoardState_Output)
+                state++;
         }
         void * getData()
         {
@@ -139,6 +177,26 @@ class BlackBoard : public AbstractBlackboard
         }
         void call()
         {
+            int type = 0;
+            switch(state)
+            {
+                case BlackBoardState_Null:
+                    type = AbstractActionType_Input;
+                    break;
+                case BlackBoardState_Input:
+                    type = AbstractActionType_Shift;
+                    break;
+                case BlackBoardState_Shift:
+                    type = AbstractActionType_Alphabetizer;
+                    break;
+                case BlackBoardState_Sort:
+                    type = AbstractActionType_Output;
+                    break;
+                default:
+                    break;
+            }
+            if (type >= 0 and type <= AbstractActionType_Alphabetizer)
+                getAbstractActionByType(type)->fire();
         }
 };
 
@@ -194,6 +252,9 @@ class ShiftAction : public AbstractAction
                     tempSetenceData->shiftData[index] = tempList;
                 }
             }
+
+            bb->changeState();
+            bb->call();
         }
         void fire()
         {
@@ -309,6 +370,8 @@ class OutputAction : public AbstractAction
 
             for (auto temp = allDataBegin; temp != allDataEnd; temp++)
                 printOneAllSortSetence(*temp);
+
+            bb->changeState();
         }
 
         void spliteString(std::string * result, std::list<std::string*> list)
@@ -384,6 +447,9 @@ class SortAction : public AbstractAction
 
             for (auto temp = allDataBegin; temp != allDataEnd; temp++)
                 sortOneSetence(*temp);
+
+            bb->changeState();
+            bb->call();
         }
 
         void sortOneSetence(SetenceData * tempSetenceData)
@@ -459,6 +525,12 @@ class InputAction : public AbstractAction
 
             for (auto temp = listBegin; temp != listEnd; temp++)
                 readOneFileByName(*temp);
+
+            BlackBoard * bb = dynamic_cast<BlackBoard*>(owner);
+            if (bb == nullptr)
+                return;
+            bb->changeState();
+            bb->call();
         }
 
         void readAllFilesName()
