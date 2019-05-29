@@ -460,12 +460,15 @@ class SortAction : public AbstractAction
             char letter = 'A';
             int length = bb->allData.size();
 
-            for (int index = 1; index <= length; index++)
+            for (int index = 0; index < length; index++)
             {
+                if (bb->allData[index]->originData.empty())
+                    continue;
+
                 auto templist = bb->allData[index]->originData.begin();
                 char tempChar = (**templist)[0];
                 tempChar = (tempChar >= 'A' && tempChar <= 'Z') ? tempChar : (tempChar-32);
-                letterMap[tempChar].insert(letterMap[tempChar].end(), index++);
+                letterMap[tempChar].insert(letterMap[tempChar].end(), index);
             }
 
             for (int i = 0; i < 26; i++)
