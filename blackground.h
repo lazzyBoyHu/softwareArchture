@@ -154,7 +154,8 @@ class SetenceData
 class BlackBoard : public AbstractBlackboard
 {
     public:
-        std::list<SetenceData*> allData;
+        std::vector<SetenceData*> allData;
+        std::list<int> allDataSort;
         int state;
     public:
         BlackBoard() : AbstractBlackboard()
@@ -433,7 +434,40 @@ class SortAction : public AbstractAction
 
         void fire()
         {
-            sort();
+            sortAllData();
+            //sort();
+        }
+
+        void sortAllData()
+        {
+            BlackBoard * bb = dynamic_cast<BlackBoard*>(owner);
+            if (bb == nullptr)
+                return;
+
+            char letter = 'A';
+            int length = bb->allData.size();
+
+            for (int index = 1; index <= length; index++)
+            {
+                auto templist = bb->allData[index]->originData.begin();
+                char tempChar = (**templist)[0];
+                tempChar = (tempChar >= 'A' && tempChar <= 'Z') ? tempChar : (tempChar-32);
+                letterMap[tempChar].insert(letterMap[tempChar].end(), index++);
+            }
+
+            for (int i = 0; i < 26; i++)
+            {
+                std::vector<int> tempVector = letterMap[letter++];
+
+                if (tempVector.empty())
+                    continue;
+
+                for (unsigned long j = 1; j <= tempVector.size(); j++)
+                    bb->allDataSort.insert(bb->allDataSort.end(), tempVector[j]);
+            }
+
+            clearLetterMap();
+            buildLetterMap();
         }
 
         void sort()
