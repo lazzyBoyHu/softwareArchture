@@ -297,6 +297,19 @@ class OutputAction : public AbstractAction
                 printOneOriginData(*temp);
         }
 
+        void printSortOriginData()
+        {
+            BlackBoard * bb = dynamic_cast<BlackBoard*>(owner);
+            if (bb == nullptr)
+                return;
+
+            auto allSortDataBegin = bb->allDataSort.begin();
+            auto allSortDataEnd = bb->allDataSort.end();
+
+            for (auto temp = allSortDataBegin; temp != allSortDataEnd; temp++)
+                printOneOriginData((bb->allData)[*temp]);
+        }
+
         void printOneOriginData(SetenceData * tempSetenceData)
         {
             if (tempSetenceData == nullptr)
@@ -468,6 +481,9 @@ class SortAction : public AbstractAction
 
             clearLetterMap();
             buildLetterMap();
+
+            bb->changeState();
+            bb->call();
         }
 
         void sort()
@@ -673,11 +689,11 @@ class InputAction : public AbstractAction
 
         void explainSplitErrorNo(int errNo, long lineno)
         {
-            std::cout << "第" << lineno << "行, ";
+            //std::cout << "第" << lineno << "行, ";
             switch (errNo)
             {
                 case StringSplitError_Success :
-                    std::cout << "分割成功! " << std::endl;
+                    //std::cout << "分割成功! " << std::endl;
                     break;
                 case StringSplitError_NoSetenceData :
                     std::cout << "出错, SetenceData 为空! " << std::endl;
