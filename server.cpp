@@ -24,10 +24,11 @@ int main()
     sort->setOwner(bb);
 
     start = clock();
-    input->fire();
+/*    input->fire();
     shift->fire();
     sort->fire();
-    output->fire();
+    output->fire();*/
+    bb->call();
     end = clock();
     std::cout << "运行时间为: " << end-start << "ms" <<std::endl;
 
