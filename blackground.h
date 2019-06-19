@@ -281,7 +281,8 @@ class OutputAction : public AbstractAction
         void printAll()
         {
             printAllShiftSetence();
-            printAllSortSetence();
+            //printAllSortSetence();
+            printSortOriginData();
         }
 
         void printOriginData()
